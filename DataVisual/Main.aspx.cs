@@ -20,10 +20,57 @@ public partial class Main : System.Web.UI.Page
     }
 
     [WebMethod]
-    [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+   // [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
     public string ReadFile()
     {
-        String fileUrl = "https://marketinvoice.looker.com/looks/XN9ChdBFx4KMSBTMPzQK6P6k6p9FJGWv.txt";
+        String fileUrl = "http://marketinvoice.looker.com/looks/XN9ChdBFx4KMSBTMPzQK6P6k6p9FJGWv.txt";
+
+        WebClient client = new WebClient();
+        Stream data = client.OpenRead(fileUrl);
+
+        StreamReader reader = new StreamReader(data);
+        string text = reader.ReadToEnd();
+        string[] contentCollection = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        int length = contentCollection.Length;
+        string result = "[ ";
+
+        /** Headers **/
+        string[] headers = new string[] { };
+        int count = 0;
+        string firstLine = contentCollection[0];
+        if (firstLine != null)
+        {
+            headers = firstLine.Replace(" ", "").Replace("%", "Percent").Replace("(", "").Replace(")", "").Split('\t');
+            count = headers.Length;
+        }
+        /** Values **/
+        string[] row = new string[] { };
+        for (int countLines = 1; countLines < length; countLines++)
+        {
+            row = contentCollection[countLines].Split('\t');
+            result += "{";
+            for (int countValues = 0; countValues < count; countValues++)
+            {
+                result += String.Format("{0}: \"{1}\", ", headers[countValues], row[countValues]);
+            }
+            result += "}, ";
+        }
+
+        result = result.Replace(@"\", "");
+        result = result.Remove(result.Length - 1);
+        result += "]";
+
+        return result;
+    }
+}
+
+
+/** Read text file line by line.
+ * [WebMethod]
+   // [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+    public string ReadFile()
+    {
+        String fileUrl = "http://marketinvoice.looker.com/looks/XN9ChdBFx4KMSBTMPzQK6P6k6p9FJGWv.txt";
 
         WebClient client = new WebClient();
         Stream data = client.OpenRead(fileUrl);
@@ -32,10 +79,10 @@ public partial class Main : System.Web.UI.Page
         //string s = reader.ReadToEnd();
         string result = "[ ";
 
-        try
-        {
+        //try
+        //{
             string line = reader.ReadLine();
-            string[] headers = new string[]{}, row  = new string[]{};
+            string[] headers = new string[] { }, row = new string[] { };
             int count = 0;
             if (line != null)
             {
@@ -52,34 +99,25 @@ public partial class Main : System.Web.UI.Page
                 result += "{";
                 for (int i = 0; i < count; i++)
                 {
-                   
-                    /**
-                     *  beutify the string representation. Right now it looks like this: 
-                     * "[ {\"TradeID\": \"19594\", \"AdvanceDate\": \"2015-11-11\", \"ExpectedPaymentDate\": \"2015-12-09\", 
-                     * \"SettlementDate\": \"\"\"\", \"PaymentState\": \"Awaiting Repayment\", \"PriceGrade\": \"2\", \"Currency\": \"GBP\", 
-                     * \"FaceValue\": \"8970\", \"Advance\": \"7624\", \"AdvancePercent\": \"85.0000\", \"DiscountPercent\": \"0.6300\", 
-                     * \"DiscountOnAdvanceorFaceValue\": \"Advance\", \"OutstandingPrincipal\": \"7624\", \"FaceValueGBP\": \"8970\", 
-                     * \"AdvanceGBP\": \"7624\", \"OutstandingPrincipalGBP\": \"7624\", \"AnnualisedGrossYieldPercent\": \"7.8275\", 
-                     * \"InArrears\": \"No\", \"InArrearsonDate\": \"\"\"\", \"CrystallisedLoss\": \"\"\"\", 
-                     * \"CrystallisedLossDate\": \"\"\"\", }, "
-                     */
-
-                    result += '"' + headers[i] + '"' + ':' + " " + '"' + row[i] + '"' +',' + " ";
+                    result += String.Format("{0}: \"{1}\", ", headers[i], row[i]);
                 }
                 result += "}, ";
 
                 line = reader.ReadLine();
             }
+            result = result.Replace(@"\", "");
             result = result.Remove(result.Length - 1);
             result += "]";
-        }
-        catch (Exception ex)
-        {
-            result = null;
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    result = null;
+        //}
 
-        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        //JavaScriptSerializer serializer = new JavaScriptSerializer();
+        //string jsonResult = serializer.Serialize(result);
 
-        return serializer.Serialize(result);
+        return result;
     }
-}
+ * 
+*/
