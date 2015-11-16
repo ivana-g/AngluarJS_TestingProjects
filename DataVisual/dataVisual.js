@@ -1,4 +1,7 @@
-(function () {
+//(function () {
+$(document).ready(function(){
+
+    alert("data visual file");
     var data = {
         labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         datasets: [
@@ -25,14 +28,33 @@
         ]
     };
 
-    setTimeout(function () {
-        var element = document.getElementById("myChart");
-        if (element) {
-            var ctx = element.getContext("2d");
-            var mylinechart = new Chart(ctx).Line(data);
-        } else {
-            console.log("element is null");
-        }
-    }, 3000);
+    /** Cross domain ajax with dataType="text"  
+        https://github.com/Rob--W/cors-anywhere/
+    */
+      var cors_api_url = 'https://cors-anywhere.herokuapp.com/';
+      function doCORSRequest(options, printResult) {
+        var x = new XMLHttpRequest();
+        x.open(options.method, cors_api_url + options.url);
+        x.onload = x.onerror = function() {
+          printResult(x.responseText);
+        };
+        x.send(options.data);
+      }
 
-}());
+      doCORSRequest({
+        method: 'GET',
+        url: "https://marketinvoice.looker.com/looks/XN9ChdBFx4KMSBTMPzQK6P6k6p9FJGWv.txt"
+      }, function printResult(result) {
+        alert("success. lenght: " + result.lenght);
+        $("#update").html(result);
+      });
+
+
+    /*
+    var element = document.getElementById("myChart");
+    var ctx = element.getContext("2d");
+    var mylinechart = new Chart(ctx).Line(data);
+    */
+
+});
+//}());
