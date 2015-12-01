@@ -1,7 +1,9 @@
-//(function () {
-$(document).ready(function(){
+var DataVisual = DataVisual || {};
 
+$(document).ready(function() {
+    var $d = DataVisual;
     alert("data visual file");
+    /*
     var data = {
         labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         datasets: [
@@ -27,28 +29,15 @@ $(document).ready(function(){
             }
         ]
     };
-
-    /** Cross domain ajax with dataType="text"  
-        https://github.com/Rob--W/cors-anywhere/
     */
-      var cors_api_url = 'https://cors-anywhere.herokuapp.com/';
-      function doCORSRequest(options, printResult) {
-        var x = new XMLHttpRequest();
-        x.open(options.method, cors_api_url + options.url);
-        x.onload = x.onerror = function() {
-          printResult(x.responseText);
-        };
-        x.send(options.data);
-      }
-
-      doCORSRequest({
-        method: 'GET',
-        url: "https://marketinvoice.looker.com/looks/XN9ChdBFx4KMSBTMPzQK6P6k6p9FJGWv.txt"
-      }, function printResult(result) {
-        alert("success. lenght: " + result.lenght);
-        $("#update").html(result);
-      });
-
+    var marketInvoice = $d.marketInvoice();
+    var data = marketInvoice.getData();
+    var html = "<div>";
+    for (var i = 0; i < 100 /*data.length*/; i++) {
+        html += "<div>" + data[i]['TradeID'] + "</div>";
+    }
+    html += "</div>"
+    $("#update").html(html);
 
     /*
     var element = document.getElementById("myChart");
@@ -57,4 +46,3 @@ $(document).ready(function(){
     */
 
 });
-//}());
