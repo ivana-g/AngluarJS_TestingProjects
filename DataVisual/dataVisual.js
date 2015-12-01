@@ -1,8 +1,7 @@
 var DataVisual = DataVisual || {};
 
-$(document).ready(function() {
+$(document).ready(function () {
     var $d = DataVisual;
-    alert("data visual file");
     /*
     var data = {
         labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -31,14 +30,26 @@ $(document).ready(function() {
     };
     */
     var marketInvoice = $d.marketInvoice();
-    var data = marketInvoice.getData();
-    var html = "<div>";
-    for (var i = 0; i < 100 /*data.length*/; i++) {
-        html += "<div>" + data[i]['TradeID'] + "</div>";
-    }
-    html += "</div>"
-    $("#update").html(html);
+    var URL = "https://marketinvoice.looker.com/looks/XN9ChdBFx4KMSBTMPzQK6P6k6p9FJGWv.txt";
+    
+    var printResult = function (result) {
+        var serializorObj = $d.serializor();
+        var output = serializorObj.parseDataToJSON(result)
 
+        var html;
+        for (var i = 0; i <  output.length; i++) {
+            html += "<div>" + JSON.stringify(output[i]) + "</div>";
+        }
+        $("#update").html(html);
+    }
+    
+    marketInvoice.getData({
+        method: 'GET',
+        url: URL,
+    }, printResult);
+    
+    
+    
     /*
     var element = document.getElementById("myChart");
     var ctx = element.getContext("2d");
